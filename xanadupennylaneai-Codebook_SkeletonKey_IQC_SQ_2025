@@ -1,0 +1,322 @@
+#these are the answers locked behind correct answers on pennylane.ai. published concisely
+#delete the whole cell when copying in. it's right.
+
+#iqc I.2.1
+def my_circuit(theta, phi):
+    qml.CNOT(wires=[0, 1])
+    qml.Hadamard(wires=0)
+    qml.RX(theta, wires=2)
+    qml.CNOT(wires=[2, 0])
+    qml.RY(phi, wires=1)
+    return qml.probs(wires=[0, 1, 2])
+
+#iqc I.2.2
+dev = qml.device("default.qubit", wires=3)
+def my_circuit(theta, phi, omega):
+    qml.RX(theta, wires=0)
+    qml.RY(phi, wires=1)
+    qml.RZ(omega, wires=2)
+    qml.CNOT(wires=[0, 1])
+    qml.CNOT(wires=[1, 2])
+    qml.CNOT(wires=[2, 0])
+    return qml.probs(wires=[0, 1, 2])
+my_qnode = qml.QNode(my_circuit, dev)
+theta, phi, omega = 0.1, 0.2, 0.3
+my_qnode(theta, phi, omega)
+
+#iqc I.2.3
+dev = qml.device("default.qubit", wires=3)
+@qml.qnode(dev)
+def my_circuit(theta, phi, omega):
+    qml.RX(theta, wires=0)
+    qml.RY(phi, wires=1)
+    qml.RZ(omega, wires=2)
+    qml.CNOT(wires=[0, 1])
+    qml.CNOT(wires=[1, 2])
+    qml.CNOT(wires=[2, 0])
+    return qml.probs(wires=[0, 1, 2])
+theta, phi, omega = 0.1, 0.2, 0.3
+my_circuit(theta, phi, omega)
+
+#iqc I.2.4
+dev = qml.device("default.qubit", wires=3)
+@qml.qnode(dev)
+def my_circuit(theta, phi, omega):
+    qml.RX(theta, wires=0)
+    qml.RY(phi, wires=1)
+    qml.RZ(omega, wires=2)
+    qml.CNOT(wires=[0, 1])
+    qml.CNOT(wires=[1, 2])
+    qml.CNOT(wires=[2, 0])
+    return qml.probs(wires=[0, 1, 2])
+depth = 4
+
+#iqc I.3.1
+dev = qml.device("default.qubit", wires=1)
+U = np.array([[1, 1], [1, -1]]) / np.sqrt(2)
+@qml.qnode(dev)
+def apply_u():
+    qml.QubitUnitary(U, wires=0)
+    return qml.state()
+
+#iqc I.3.2
+dev = qml.device("default.qubit", wires=1)
+@qml.qnode(dev)
+def apply_u_as_rot(phi, theta, omega):
+    qml.Rot(phi, theta, omega, wires=0)
+    return qml.state()
+
+#sq I.4.1
+dev = qml.device("default.qubit", wires=1)
+U = np.array([[1, 1], [1, -1]]) / np.sqrt(2)
+@qml.qnode(dev)
+def varied_initial_state(state):
+    if state == 1:
+        qml.PauliX(wires=0)
+    qml.QubitUnitary(U, wires=0)
+    return qml.state()
+
+#sq I.4.2
+dev = qml.device("default.qubit", wires=1)
+@qml.qnode(dev)
+def apply_hadamard():
+    qml.Hadamard(wires=0)
+    return qml.state()
+
+#sq 1.4.3
+dev = qml.device("default.qubit", wires=1)
+@qml.qnode(dev)
+def apply_hadamard_to_state(state):
+    if state == 1:
+        qml.PauliX(wires=0)
+    qml.Hadamard(wires=0)
+    return qml.state()
+print(apply_hadamard_to_state(0))
+print(apply_hadamard_to_state(1))
+
+#sq 1.4.4
+dev = qml.device("default.qubit", wires=1)
+@qml.qnode(dev)
+def apply_hxh(state):
+    if state == 1:
+        qml.PauliX(wires=0)
+    qml.Hadamard(wires=0)
+    qml.PauliX(wires=0)
+    qml.Hadamard(wires=0)
+    return qml.state()
+
+#sq 1.4.4
+dev = qml.device("default.qubit", wires=1)
+@qml.qnode(dev)
+def apply_hxh(state):
+    if state == 1:
+        qml.PauliX(wires=0)
+    qml.Hadamard(wires=0)
+    qml.PauliX(wires=0)
+    qml.Hadamard(wires=0)
+    return qml.state()
+
+#sq 1.5.1
+dev = qml.device("default.qubit", wires=1)
+@qml.qnode(dev)
+def apply_z_to_plus():
+    qml.Hadamard(wires=0)
+    qml.PauliZ(wires=0)
+    return qml.state()
+
+#sq 1.5.2
+dev = qml.device("default.qubit", wires=1)
+@qml.qnode(dev)
+def fake_z():
+    qml.Hadamard(wires=0)
+    qml.RZ(np.pi, wires=0)
+    return qml.state()
+
+#sq 1.5.3
+dev = qml.device("default.qubit", wires=1)
+@qml.qnode(dev)
+def many_rotations():
+    """Implement the circuit depicted above and return the quantum state."""
+    qml.Hadamard(0)
+    qml.S(0)
+    qml.adjoint(qml.T(0))
+    qml.RZ(0.3, wires=0)
+    qml.adjoint(qml.S(0))
+    return qml.state()
+
+#sq 1.6.1
+dev = qml.device("default.qubit", wires=1)
+@qml.qnode(dev)
+def apply_rx_pi(state):
+    if state == 1:
+        qml.PauliX(wires=0)
+    qml.RX(np.pi, wires=0)
+    return qml.state()
+print(apply_rx_pi(0))
+print(apply_rx_pi(1))
+
+#sq 1.6.2
+dev = qml.device("default.qubit", wires=1)
+@qml.qnode(dev)
+def apply_rx(theta, state):
+    if state == 1:
+        qml.PauliX(wires=0)
+    qml.RX(theta, wires=0)
+    return qml.state()
+angles = np.linspace(0, 4 * np.pi, 200)
+output_states = np.array([apply_rx(t, 0) for t in angles])
+plot = plotter(angles, output_states)
+
+#sq 1.6.3
+dev = qml.device("default.qubit", wires=1)
+@qml.qnode(dev)
+def apply_ry(theta, state):
+    if state == 1:
+        qml.PauliX(wires=0)
+    qml.RY(theta, wires=0)
+    return qml.state()
+angles = np.linspace(0, 4 * np.pi, 200)
+output_states = np.array([apply_ry(t, 0) for t in angles])
+plot = plotter(angles, output_states)
+
+#sq 1.7.1
+dev = qml.device("default.qubit", wires=1)
+phi, theta, omega = np.pi / 2, np.pi / 2, np.pi / 2
+@qml.qnode(dev)
+def hadamard_with_rz_rx():
+    qml.RZ(phi, wires=0)
+    qml.RX(theta, wires=0)
+    qml.RZ(omega, wires=0)
+    return qml.state()
+
+#sq 1.7.2
+dev = qml.device("default.qubit", wires=1)
+@qml.qnode(dev)
+def convert_to_rz_rx():
+    # IMPLEMENT THE CIRCUIT IN THE PICTURE USING ONLY RZ AND RX
+    qml.RZ(np.pi / 2, wires=0)
+    qml.RX(np.pi / 2, wires=0)
+    qml.RZ(7 * np.pi / 4, wires=0)
+    qml.RX(np.pi, wires=0)
+    return qml.state()
+
+#sq 1.7.3
+dev = qml.device("default.qubit", wires=1)
+@qml.qnode(dev)
+def unitary_with_h_and_t():
+    qml.Hadamard(wires=0)
+    qml.T(wires=0)
+    qml.Hadamard(wires=0)
+    qml.T(wires=0)
+    qml.T(wires=0)
+    qml.Hadamard(wires=0)
+    return qml.state()
+
+#sq I.8.1
+dev = qml.device("default.qubit", wires=1)
+@qml.qnode(dev)
+def prepare_state():
+    qml.Hadamard(wires=0)
+    qml.RZ(5 * np.pi / 4, wires=0)
+    return qml.state()
+
+#sq I.8.2
+dev = qml.device("default.qubit", wires=1)
+@qml.qnode(dev)
+def prepare_state():
+    qml.RX(np.pi / 3, wires=0)
+    return qml.state()
+
+#sq I.8.3
+v = np.array([0.52889389 - 0.14956775j, 0.67262317 + 0.49545818j])
+dev = qml.device("default.qubit", wires=1)
+@qml.qnode(dev)
+def prepare_state(state=v):
+    qml.MottonenStatePreparation(state, wires=[0])
+    return qml.state()
+print(prepare_state(v))
+print(qml.draw(prepare_state, level="device")(v))
+
+#sq I.9.1
+dev = qml.device("default.qubit", wires=1)
+@qml.qnode(dev)
+def apply_h_and_measure(state):
+    qml.Hadamard(wires=0)
+    return qml.probs(wires=0)
+print(apply_h_and_measure(0))
+print(apply_h_and_measure(1))
+
+#sq I.9.2
+def prepare_psi():
+    qml.RX(-2 * np.pi / 3, wires=0)
+def y_basis_rotation():
+    qml.Hadamard(0)
+    qml.S(0)
+
+#sq I.9.3
+dev = qml.device("default.qubit", wires=1)
+@qml.qnode(dev)
+def measure_in_y_basis():
+    prepare_psi()
+    qml.adjoint(y_basis_rotation)()
+    return qml.probs(wires=0)
+print(measure_in_y_basis())
+
+#sq I.10.1
+dev = qml.device("default.qubit", wires=1)
+@qml.qnode(dev)
+def circuit():
+    qml.RX(np.pi / 4, wires=0)
+    qml.Hadamard(wires=0)
+    qml.PauliZ(wires=0)
+    return qml.expval(qml.PauliY(0))
+
+#sq I.10.2
+shot_results = []
+shot_values = [100, 1000, 10000, 100000, 1000000]
+for shots in shot_values:
+    dev = qml.device("default.qubit", wires=1, shots=shots)
+    @qml.qnode(dev)
+    def circuit():
+        qml.RX(np.pi / 4, wires=0)
+        qml.Hadamard(wires=0)
+        qml.PauliZ(wires=0)
+        return qml.expval(qml.PauliY(0))
+    shot_results.append(circuit())
+print(qml.math.unwrap(shot_results))
+
+#sq I.10.3
+dev = qml.device("default.qubit", wires=1, shots=100000)
+@qml.qnode(dev)
+def circuit():
+    qml.RX(np.pi / 4, wires=0)
+    qml.Hadamard(wires=0)
+    qml.PauliZ(wires=0)
+    return qml.sample(qml.PauliY(0))
+def compute_expval_from_samples(samples):
+    estimated_expval = 0
+    for i in samples:
+        estimated_expval += i
+    estimated_expval = estimated_expval / np.size(samples)
+    return estimated_expval
+samples = circuit()
+print(compute_expval_from_samples(samples))
+
+#sq I.10.4
+def variance_experiment(n_shots):
+    n_trials = 100
+    dev = qml.device("default.qubit", wires=1, shots=n_shots)
+    @qml.qnode(dev)
+    def circuit():
+        qml.Hadamard(wires=0)
+        return qml.expval(qml.PauliZ(wires=0))
+    results = [circuit() for _ in range(n_trials)]
+    return np.var(results)
+def variance_scaling(n_shots):
+    if n_shots == 0:
+        return None
+    return 1.0 / n_shots
+shot_vals = [10, 20, 40, 100, 200, 400, 1000, 2000, 4000]
+results_experiment = [variance_experiment(shots) for shots in shot_vals]
+results_scaling = [variance_scaling(shots) for shots in shot_vals]
+plot = plotter(shot_vals, results_experiment, results_scaling)
